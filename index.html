@@ -35,46 +35,44 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
       z-index: 1000;
       background: rgba(0, 0, 0, 0.8);
       padding: 15px;
       border-radius: 8px;
+      text-align: center;
     }
 
-    .audio-controls button {
-      padding: 10px 20px;
-      background: darkred;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
+    .audio-label {
+      font-size: 18px;
       font-weight: bold;
-      outline: none;
-    }
-
-    .audio-controls button:hover {
-      background: crimson;
-    }
-
-    .audio-controls button:active {
-      background: maroon;
+      color: white;
+      margin-bottom: 10px;
+      display: block;
     }
 
     audio {
       width: 100%;
-      max-width: 300px;
+      max-width: 400px;
+      height: 60px;
+      border: 2px solid crimson;
+      border-radius: 8px;
+      background-color: #111;
+      display: block;
+      margin: 0 auto;
     }
 
     /* Mobile Styles */
     @media (max-width: 600px) {
-      .audio-controls button {
-        font-size: 14px;
-        padding: 8px 15px;
+      .audio-controls {
+        padding: 10px;
+      }
+
+      audio {
+        height: 70px; /* Slightly larger for easier taps */
+      }
+
+      .audio-label {
+        font-size: 16px;
       }
     }
   </style>
@@ -83,43 +81,20 @@
   <div class="container">
     <div class="image"></div>
     <div class="audio-controls">
-      <!-- Conditional rendering happens here -->
+      <span class="audio-label">🔊 Play Scary Music</span>
+      <audio id="scary-music" src="murderfamilydollhouse-music.mp3" loop controls></audio>
     </div>
   </div>
 
   <script>
-    const container = document.querySelector('.audio-controls');
-    const scaryMusic = document.createElement('audio');
-    scaryMusic.id = 'scary-music';
-    scaryMusic.src = 'murderfamilydollhouse-music.mp3';
-    scaryMusic.loop = true;
+    const audioElement = document.getElementById('scary-music');
 
-    // Check user agent to detect if it's a mobile device
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-    if (isMobile) {
-      // Render browser-provided controls for mobile devices
-      scaryMusic.controls = true;
-      container.appendChild(scaryMusic);
-    } else {
-      // Render custom buttons for desktop
-      const playButton = document.createElement('button');
-      playButton.textContent = 'Play Music';
-      playButton.onclick = () => scaryMusic.play().catch(err => console.error('Playback error:', err));
-
-      const stopButton = document.createElement('button');
-      stopButton.textContent = 'Stop Music';
-      stopButton.onclick = () => {
-        scaryMusic.pause();
-        scaryMusic.currentTime = 0;
-      };
-
-      container.appendChild(playButton);
-      container.appendChild(stopButton);
-
-      // Append audio element (hidden) for desktop playback
-      document.body.appendChild(scaryMusic);
-    }
+    // Ensure audio plays when a touch event is detected
+    window.addEventListener('touchstart', () => {
+      audioElement.play().catch((err) => {
+        console.error('Playback blocked on touchstart:', err);
+      });
+    });
   </script>
 </body>
 </html>
