@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scary Website</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: black;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .image {
+      width: 100%;
+      height: 100%;
+      background: url('scary-image.jpg') no-repeat center center;
+      background-size: cover;
+    }
+
+    .audio-controls {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .audio-controls button {
+      padding: 10px;
+      background: darkred;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="image"></div>
+    <audio id="scary-music" src="scary-music.mp3" loop></audio>
+    <div class="audio-controls">
+      <button onclick="playMusic()">Play Music</button>
+      <button onclick="stopMusic()">Stop Music</button>
+    </div>
+  </div>
+
+  <script>
+    const scaryMusic = document.getElementById('scary-music');
+
+    // Play scary music on page load
+    window.addEventListener('load', () => {
+      try {
+        scaryMusic.play();
+      } catch (err) {
+        console.log('Autoplay blocked: Click Play to start music.');
+      }
+    });
+
+    // Play/Stop controls
+    function playMusic() {
+      scaryMusic.play();
+    }
+
+    function stopMusic() {
+      scaryMusic.pause();
+    }
+  </script>
+</body>
+</html>
