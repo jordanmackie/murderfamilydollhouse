@@ -2,19 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>MurderFamilyDollhouse</title>
   <style>
     body {
       margin: 0;
-      overflow: hidden;
+      padding: 0;
       height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       background: black;
       color: white;
       font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .container {
@@ -30,16 +30,23 @@
       background-size: cover;
     }
 
-    .audio-controls {
-      position: absolute;
-      bottom: 20px;
+    /* Dynamic Control Container */
+    .dynamic-controller {
+      position: fixed;
+      bottom: calc(env(safe-area-inset-bottom) + 20px);
       left: 50%;
       transform: translateX(-50%);
-      z-index: 1000;
       background: rgba(0, 0, 0, 0.8);
+      border: 2px solid crimson;
+      border-radius: 20px;
       padding: 15px;
-      border-radius: 8px;
-      text-align: center;
+      width: auto;
+      min-width: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 1000;
+      transition: all 0.3s ease-in-out;
     }
 
     .audio-label {
@@ -47,13 +54,12 @@
       font-weight: bold;
       color: white;
       margin-bottom: 10px;
-      display: block;
+      text-align: center;
     }
 
     audio {
       width: 100%;
       max-width: 400px;
-      height: 60px;
       border: 2px solid crimson;
       border-radius: 8px;
       background-color: #111;
@@ -61,14 +67,15 @@
       margin: 0 auto;
     }
 
-    /* Mobile Styles */
+    /* Mobile-Specific Styles */
     @media (max-width: 600px) {
-      .audio-controls {
-        padding: 10px;
+      .dynamic-controller {
+        bottom: calc(env(safe-area-inset-bottom) + 10px);
+        min-width: 90%;
       }
 
       audio {
-        height: 70px; /* Slightly larger for easier taps */
+        height: auto;
       }
 
       .audio-label {
@@ -80,7 +87,8 @@
 <body>
   <div class="container">
     <div class="image"></div>
-    <div class="audio-controls">
+    <!-- Dynamic Full Control Container -->
+    <div id="dynamicController" class="dynamic-controller">
       <span class="audio-label">🔊 Play Scary Music</span>
       <audio id="scary-music" src="murderfamilydollhouse-music.mp3" loop controls></audio>
     </div>
@@ -89,11 +97,22 @@
   <script>
     const audioElement = document.getElementById('scary-music');
 
-    // Ensure audio plays when a touch event is detected
+    // Check if the audio controls are rendered and debug the audio file
+    audioElement.addEventListener('loadeddata', () => {
+      console.log('Audio controls loaded successfully.');
+    });
+
+    audioElement.addEventListener('error', (e) => {
+      console.error('Audio failed to load:', e.target.error.message);
+    });
+
+    // Ensure audio plays when the user interacts (necessary for mobile and some desktop browsers)
     window.addEventListener('touchstart', () => {
-      audioElement.play().catch((err) => {
-        console.error('Playback blocked on touchstart:', err);
-      });
+      audioElement.play().catch((err) => console.error('Playback blocked on touchstart:', err));
+    });
+
+    window.addEventListener('click', () => {
+      audioElement.play().catch((err) => console.error('Playback blocked on click:', err));
     });
   </script>
 </body>
