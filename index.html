@@ -30,55 +30,86 @@
       background-size: cover;
     }
 
-    /* Dynamic Control Container */
-    .dynamic-controller {
+    /* Accessible Audio Controller in the Upper-Right */
+    .audio-controller {
       position: fixed;
-      bottom: calc(env(safe-area-inset-bottom) + 20px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.8);
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.9);
       border: 2px solid crimson;
-      border-radius: 20px;
-      padding: 15px;
-      width: auto;
-      min-width: 300px;
+      border-radius: 15px;
+      padding: 10px;
+      width: 140px;
       display: flex;
       flex-direction: column;
       align-items: center;
       z-index: 1000;
-      transition: all 0.3s ease-in-out;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
     }
 
-    .audio-label {
-      font-size: 18px;
-      font-weight: bold;
+    .audio-button {
+      width: 50px;
+      height: 50px;
+      background: crimson;
+      border: none;
+      border-radius: 50%;
       color: white;
+      font-size: 18px;
+      cursor: pointer;
       margin-bottom: 10px;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    audio {
+    .audio-button:hover {
+      background: darkred;
+    }
+
+    .audio-button:focus {
+      outline: 2px solid yellow;
+      outline-offset: 2px;
+    }
+
+    .volume-slider {
+      -webkit-appearance: none;
       width: 100%;
-      max-width: 400px;
-      border: 2px solid crimson;
-      border-radius: 8px;
-      background-color: #111;
-      display: block;
-      margin: 0 auto;
+      height: 8px;
+      background: white;
+      border-radius: 5px;
+      outline: none;
+      cursor: pointer;
     }
 
-    /* Mobile-Specific Styles */
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 15px;
+      height: 15px;
+      background: crimson;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .volume-slider::-moz-range-thumb {
+      width: 15px;
+      height: 15px;
+      background: crimson;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    /* Mobile Adjustments */
     @media (max-width: 600px) {
-      .dynamic-controller {
-        bottom: calc(env(safe-area-inset-bottom) + 10px);
-        min-width: 90%;
+      .audio-controller {
+        width: 100px;
+        top: 10px;
+        right: 10px;
       }
 
-      audio {
-        height: auto;
-      }
-
-      .audio-label {
+      .audio-button {
+        width: 40px;
+        height: 40px;
         font-size: 16px;
       }
     }
@@ -87,32 +118,60 @@
 <body>
   <div class="container">
     <div class="image"></div>
-    <!-- Dynamic Full Control Container -->
-    <div id="dynamicController" class="dynamic-controller">
-      <span class="audio-label">🔊 Play Scary Music</span>
-      <audio id="scary-music" src="murderfamilydollhouse-music.mp3" loop controls></audio>
+    <!-- Custom Accessible Audio Controller -->
+    <div id="audioController" class="audio-controller">
+      <button
+        id="playPauseButton"
+        class="audio-button"
+        aria-label="Play or Pause Music"
+        title="Play or Pause Music"
+      >
+        ▶️
+      </button>
+      <input
+        id="volumeSlider"
+        type="range"
+        class="volume-slider"
+        min="0"
+        max="1"
+        step="0.1"
+        value="1"
+        aria-label="Volume Control"
+        title="Adjust Volume"
+      />
     </div>
+    <!-- Hidden Audio Element -->
+    <audio id="scaryMusic" src="murderfamilydollhouse-music.mp3" loop></audio>
   </div>
 
   <script>
-    const audioElement = document.getElementById('scary-music');
+    const playPauseButton = document.getElementById('playPauseButton');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const scaryMusic = document.getElementById('scaryMusic');
 
-    // Check if the audio controls are rendered and debug the audio file
-    audioElement.addEventListener('loadeddata', () => {
-      console.log('Audio controls loaded successfully.');
+    // Play/Pause Button
+    playPauseButton.addEventListener('click', () => {
+      if (scaryMusic.paused) {
+        scaryMusic.play();
+        playPauseButton.textContent = '⏸️'; // Change icon to pause
+      } else {
+        scaryMusic.pause();
+        playPauseButton.textContent = '▶️'; // Change icon to play
+      }
     });
 
-    audioElement.addEventListener('error', (e) => {
+    // Volume Slider
+    volumeSlider.addEventListener('input', (e) => {
+      scaryMusic.volume = e.target.value; // Adjust audio volume
+    });
+
+    // Debugging Audio Load
+    scaryMusic.addEventListener('loadeddata', () => {
+      console.log('Audio loaded successfully.');
+    });
+
+    scaryMusic.addEventListener('error', (e) => {
       console.error('Audio failed to load:', e.target.error.message);
-    });
-
-    // Ensure audio plays when the user interacts (necessary for mobile and some desktop browsers)
-    window.addEventListener('touchstart', () => {
-      audioElement.play().catch((err) => console.error('Playback blocked on touchstart:', err));
-    });
-
-    window.addEventListener('click', () => {
-      audioElement.play().catch((err) => console.error('Playback blocked on click:', err));
     });
   </script>
 </body>
